@@ -1,0 +1,28 @@
+{
+  "name": "AniVLC",
+  "short_name": "AniVLC",
+  "description": "A dedicated anime video player with subtitle sync, server switching and an offline library.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0b12",
+  "theme_color": "#0b0b12",
+  "categories": ["entertainment", "video"],
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "video/*": [".mkv", ".mp4", ".webm", ".m4v", ".mov"],
+        "text/plain": [".srt", ".ass", ".ssa"],
+        "text/vtt": [".vtt"]
+      }
+    }
+  ]
+}

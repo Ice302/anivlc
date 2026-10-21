@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AniVLC</title>
+  <meta name="description" content="A dedicated anime video player: local files, stream servers, subtitle sync. Works offline.">
+  <meta name="theme-color" content="#0b0b12">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z" fill="currentColor"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4.5" width="4" height="15" rx="1.2" fill="currentColor"/><rect x="14" y="4.5" width="4" height="15" rx="1.2" fill="currentColor"/></symbol>
+      <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 5v14M19 5.5v13a.8.8 0 0 1-1.2.7L8.5 12.7a.8.8 0 0 1 0-1.4l9.3-6.5a.8.8 0 0 1 1.2.7z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-next" viewBox="0 0 24 24"><path d="M18 5v14M5 5.5v13a.8.8 0 0 0 1.2.7l9.3-6.5a.8.8 0 0 0 0-1.4L6.2 4.8A.8.8 0 0 0 5 5.5z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-back10" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="12" y="15.5" text-anchor="middle" font-size="8.5" font-weight="700" fill="currentColor" font-family="system-ui">10</text></symbol>
+      <symbol id="i-fwd10" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="12" y="15.5" text-anchor="middle" font-size="8.5" font-weight="700" fill="currentColor" font-family="system-ui">10</text></symbol>
+      <symbol id="i-vol" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-cc" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M17 10.2a2.2 2.2 0 1 0 0 3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.6-2-3.4-2.4 1a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.5A7.6 7.6 0 0 0 7 6.5l-2.4-1-2 3.4 2 1.6a7.7 7.7 0 0 0 0 3l-2 1.6 2 3.4 2.4-1a7.6 7.6 0 0 0 2.6 1.5l.4 2.5h4l.4-2.5a7.6 7.6 0 0 0 2.6-1.5l2.4 1 2-3.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+      <symbol id="i-pip" viewBox="0 0 24 24"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="12" y="11" width="7" height="6" rx="1.2" fill="currentColor"/></symbol>
+      <symbol id="i-theater" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+      <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-exitfull" viewBox="0 0 24 24"><path d="M9 4v3.5A1.5 1.5 0 0 1 7.5 9H4M20 9h-3.5A1.5 1.5 0 0 1 15 7.5V4M15 20v-3.5a1.5 1.5 0 0 1 1.5-1.5H20M4 15h3.5A1.5 1.5 0 0 1 9 16.5V20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3.2-3.2a4.5 4.5 0 0 0-6.4-6.4l-1 1M14 10a4.5 4.5 0 0 0-6.4 0l-3.2 3.2a4.5 4.5 0 0 0 6.4 6.4l1-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-server" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="13" width="18" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="7.5" r="1.2" fill="currentColor"/><circle cx="7" cy="16.5" r="1.2" fill="currentColor"/></symbol>
+      <symbol id="i-sync" viewBox="0 0 24 24"><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+      <symbol id="i-skip" viewBox="0 0 24 24"><path d="M4 6v12l8-6zM12 6v12l8-6z" fill="currentColor"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+      <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="18.5" r="1.8" fill="currentColor"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" fill="currentColor"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="AniVLC home">
+      <img src="icons/icon.svg" alt="" width="28" height="28">
+      <span>Ani<b>VLC</b></span>
+    </a>
+    <div class="now-title" id="nowTitle"></div>
+    <div class="topbar-actions">
+      <span class="net-pill" id="netPill" title="Connection status"><i></i><span>Online</span></span>
+      <button class="btn ghost hide-sm" id="installBtn" hidden><svg><use href="#i-down"/></svg><span>Install</span></button>
+      <button class="btn ghost icon-only-sm" id="streamBtn" title="Add a stream (server URLs)"><svg><use href="#i-link"/></svg><span>Add stream</span></button>
+      <button class="btn primary icon-only-sm" id="uploadBtn" title="Upload video and subtitle files"><svg><use href="#i-upload"/></svg><span>Upload</span></button>
+      <button class="btn ghost square hide-sm" id="helpBtn" title="Keyboard shortcuts (?)"><svg><use href="#i-keyboard"/></svg></button>
+    </div>
+  </header>
+
+  <main class="layout" id="layout">
+    <section class="stage-col">
+      <div class="player" id="player" tabindex="0" data-state="empty">
+        <video id="video" playsinline preload="metadata"></video>
+        <div class="subs" id="subs" aria-live="off"></div>
+
+        <div class="empty" id="empty">
+          <div class="empty-card">
+            <div class="empty-art" aria-hidden="true"><svg><use href="#i-upload"/></svg></div>
+            <h1>Drop an episode to start watching</h1>
+            <p>Videos and subtitles (.srt, .vtt, .ass) can be dropped together, and subtitles are matched to episodes by file name.</p>
+            <div class="empty-actions">
+              <button class="btn primary lg" id="emptyUpload"><svg><use href="#i-upload"/></svg><span>Choose files</span></button>
+              <button class="btn ghost lg" id="emptyStream"><svg><use href="#i-link"/></svg><span>Add stream</span></button>
+            </div>
+            <button class="linkish" id="demoBtn">or try the demo episodes</button>
+          </div>
+        </div>
+
+        <div class="drop-veil" id="dropVeil"><div><svg><use href="#i-upload"/></svg><span>Drop to add to your queue</span></div></div>
+        <div class="spinner" id="spinner"><i></i></div>
+        <div class="osd" id="osd"></div>
+        <div class="tap-flash left" id="tapLeft"><span>−10s</span></div>
+        <div class="tap-flash right" id="tapRight"><span>+10s</span></div>
+        <div class="error-card" id="errorCard" hidden>
+          <strong>Couldn't play this episode</strong>
+          <p id="errorText"></p>
+          <div class="row-gap"><button class="btn ghost" id="retryBtn">Retry</button><button class="btn primary" id="addServerFromError">Add another server</button></div>
+        </div>
+
+        <button class="skip-op" id="skipOp" hidden><svg><use href="#i-skip"/></svg><span id="skipOpLabel">Skip intro</span></button>
+
+        <div class="upnext" id="upnext" hidden>
+          <div class="upnext-label">Up next</div>
+          <div class="upnext-title" id="upnextTitle"></div>
+          <div class="upnext-actions">
+            <button class="btn primary" id="upnextPlay"><svg class="ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><circle class="ring-fg" id="upnextRing" cx="18" cy="18" r="15"/></svg><span>Play now</span></button>
+            <button class="btn ghost" id="upnextCancel">Cancel</button>
+          </div>
+        </div>
+
+        <div class="controls" id="controls">
+          <div class="progress" id="progress" role="slider" aria-label="Seek" tabindex="-1">
+            <div class="progress-track">
+              <div class="progress-buffer" id="progBuffer"></div>
+              <div class="progress-segs" id="progSegs"></div>
+              <div class="progress-fill" id="progFill"></div>
+              <div class="progress-hover" id="progHover"></div>
+            </div>
+            <div class="progress-thumb" id="progThumb"></div>
+            <div class="scrub-tip" id="scrubTip">
+              <video id="previewVideo" muted preload="auto" playsinline></video>
+              <span id="scrubTime">0:00</span>
+            </div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-group">
+              <button class="cbtn" id="prevBtn" title="Previous episode (B)"><svg><use href="#i-prev"/></svg></button>
+              <button class="cbtn big" id="playBtn" title="Play / Pause (Space)"><svg><use href="#i-play"/></svg></button>
+              <button class="cbtn" id="nextBtn" title="Next episode (N)"><svg><use href="#i-next"/></svg></button>
+              <button class="cbtn hide-xs" id="back10" title="Back 10s (J)"><svg><use href="#i-back10"/></svg></button>
+              <button class="cbtn hide-xs" id="fwd10" title="Forward 10s (L)"><svg><use href="#i-fwd10"/></svg></button>
+              <div class="vol" id="vol">
+                <button class="cbtn" id="muteBtn" title="Mute (M)"><svg><use href="#i-vol"/></svg></button>
+                <input type="range" id="volRange" min="0" max="1" step="0.01" value="1" aria-label="Volume">
+              </div>
+              <div class="time"><span id="curTime">0:00</span><span class="sep">/</span><span id="durTime">0:00</span></div>
+            </div>
+            <div class="ctrl-group">
+              <button class="cbtn hide-xs" id="skipBtn" title="Skip intro (O)"><svg><use href="#i-skip"/></svg></button>
+              <button class="cbtn" id="ccBtn" title="Subtitles (C)"><svg><use href="#i-cc"/></svg></button>
+              <div class="menu-anchor">
+                <button class="cbtn" id="gearBtn" title="Settings"><svg><use href="#i-gear"/></svg><em class="badge" id="speedBadge" hidden></em></button>
+                <div class="pop" id="gearMenu" hidden></div>
+              </div>
+              <button class="cbtn hide-xs" id="pipBtn" title="Picture-in-picture (I)"><svg><use href="#i-pip"/></svg></button>
+              <button class="cbtn hide-sm" id="theaterBtn" title="Theater mode (T)"><svg><use href="#i-theater"/></svg></button>
+              <button class="cbtn" id="fullBtn" title="Fullscreen (F)"><svg><use href="#i-full"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info" id="info" hidden>
+        <div class="info-head">
+          <div class="info-main">
+            <button class="info-cover" id="infoCover" title="Change linked anime" hidden><img id="infoCoverImg" alt=""></button>
+            <div class="info-text">
+              <div class="info-kicker" id="infoKicker"></div>
+              <h2 class="info-title" id="infoTitle"></h2>
+              <div class="info-sub" id="infoSub"></div>
+            </div>
+          </div>
+          <div class="row-gap">
+            <button class="btn ghost sm" id="linkAnimeBtn" title="Find this show on AniList for cover art and accurate intro/outro skipping"><svg><use href="#i-sparkle"/></svg><span>Link anime</span></button>
+            <button class="btn ghost sm" id="shotBtn" title="Save a screenshot (X)"><svg><use href="#i-camera"/></svg><span>Screenshot</span></button>
+            <button class="btn ghost sm" id="editEntryBtn" title="Edit title, servers and subtitle URL"><svg><use href="#i-server"/></svg><span>Edit servers</span></button>
+          </div>
+        </div>
+        <div class="servers">
+          <span class="servers-label"><svg><use href="#i-server"/></svg>Servers</span>
+          <div class="server-chips" id="serverChips"></div>
+          <button class="chip add" id="addServerBtn" title="Add a mirror for this episode"><svg><use href="#i-plus"/></svg>Add</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side" id="side">
+      <nav class="tabs" role="tablist">
+        <button role="tab" class="tab active" data-tab="episodes">Episodes <em id="epCount">0</em></button>
+        <button role="tab" class="tab" data-tab="subtitles">Subtitles</button>
+        <button role="tab" class="tab" data-tab="settings">Settings</button>
+      </nav>
+
+      <div class="panel active" data-panel="episodes">
+        <div class="panel-tools">
+          <input type="search" id="epSearch" class="input" placeholder="Filter episodes">
+        </div>
+        <ol class="episodes" id="episodes"></ol>
+        <div class="panel-empty" id="epEmpty">
+          <p>Your queue is empty.</p>
+          <p class="muted">Upload a whole season at once and it gets sorted by episode number.</p>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="subtitles">
+        <section class="card">
+          <div class="card-head">
+            <h3>Track</h3>
+            <button class="btn ghost sm" id="subUploadBtn"><svg><use href="#i-plus"/></svg><span>Load file</span></button>
+          </div>
+          <div class="seg" id="subTracks"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h3>Sync</h3>
+            <span class="offset-readout" id="offsetReadout">0.000s</span>
+          </div>
+          <div class="sync-grid">
+            <button class="btn ghost sm" data-shift="-1">−1s</button>
+            <button class="btn ghost sm" data-shift="-0.1">−0.1s</button>
+            <button class="btn ghost sm" data-shift="0.1">+0.1s</button>
+            <button class="btn ghost sm" data-shift="1">+1s</button>
+          </div>
+          <p class="hint">Subtitles too early? Shift them later with <b>+</b> (key <kbd>H</kbd>). Too late? Use <b>−</b> (key <kbd>G</kbd>). Fastest fix: when you hear a line, press <b>Sync</b> next to it in the list below.</p>
+          <button class="linkish" id="resetOffset">Reset offset</button>
+        </section>
+
+        <section class="card grow">
+          <div class="card-head">
+            <h3>Lines</h3>
+            <label class="toggle-inline"><input type="checkbox" id="followCues" checked> Follow</label>
+          </div>
+          <input type="search" id="cueSearch" class="input" placeholder="Search dialogue">
+          <ol class="cues" id="cueList"></ol>
+        </section>
+
+        <section class="card">
+          <h3>Appearance</h3>
+          <label class="field"><span>Size</span><input type="range" id="subSize" min="60" max="200" step="5"></label>
+          <label class="field"><span>Background</span><input type="range" id="subBg" min="0" max="1" step="0.05"></label>
+          <label class="field"><span>Position</span><input type="range" id="subPos" min="2" max="40" step="1"></label>
+          <div class="field"><span>Color</span>
+            <div class="swatches" id="subColors">
+              <button data-color="#ffffff" style="--c:#ffffff" title="White"></button>
+              <button data-color="#fff3a8" style="--c:#fff3a8" title="Soft yellow"></button>
+              <button data-color="#bdf3ff" style="--c:#bdf3ff" title="Ice"></button>
+              <button data-color="#ffd1e8" style="--c:#ffd1e8" title="Sakura"></button>
+            </div>
+          </div>
+          <label class="field"><span>Outline</span><input type="checkbox" id="subOutline" class="switch"></label>
+          <label class="field"><span>Font</span>
+            <select id="subFont" class="input sm">
+              <option value="sans">Sans</option><option value="rounded">Rounded</option><option value="serif">Serif</option><option value="mono">Typewriter</option>
+            </select>
+          </label>
+        </section>
+      </div>
+
+      <div class="panel" data-panel="settings">
+        <section class="card">
+          <h3>Playback</h3>
+          <label class="field"><span>Autoplay next episode</span><input type="checkbox" id="setAutoNext" class="switch"></label>
+          <label class="field"><span>Switch server automatically on error</span><input type="checkbox" id="setFailover" class="switch"></label>
+          <label class="field"><span>Resume where I left off</span><input type="checkbox" id="setResume" class="switch"></label>
+          <label class="field"><span>Hover previews on the seek bar</span><input type="checkbox" id="setPreview" class="switch"></label>
+          <label class="field"><span>Seek step (J / L, double-tap)</span>
+            <select id="setSeekStep" class="input sm">
+              <option value="5">5s</option><option value="10">10s</option><option value="15">15s</option><option value="30">30s</option>
+            </select>
+          </label>
+        </section>
+        <section class="card">
+          <h3>Skipping</h3>
+          <label class="field"><span>Auto-skip intro, outro &amp; recap</span><input type="checkbox" id="setAutoSkip" class="switch"></label>
+          <label class="field"><span>Fallback intro skip length</span>
+            <select id="setSkipLen" class="input sm">
+              <option value="80">80s</option><option value="85">85s</option><option value="90">90s</option><option value="100">100s</option>
+            </select>
+          </label>
+          <p class="hint">Exact intro and outro times come from <b>AniSkip</b> once an episode is linked to its show (<b>Link anime</b> under the player). Without that link, Skip intro jumps ahead by the fallback length.</p>
+        </section>
+        <section class="card">
+          <h3>Subtitles</h3>
+          <label class="field"><span>Preferred language</span>
+            <select id="setSubLang" class="input sm">
+              <option value="">First track</option><option value="English">English</option><option value="Japanese">Japanese</option><option value="Spanish">Spanish</option><option value="Portuguese">Portuguese</option><option value="French">French</option><option value="German">German</option><option value="Indonesian">Indonesian</option><option value="Filipino">Filipino</option><option value="Arabic">Arabic</option>
+            </select>
+          </label>
+          <label class="field"><span>Prefer "Signs &amp; Songs" tracks</span><input type="checkbox" id="setSubSigns" class="switch"></label>
+        </section>
+        <section class="card">
+          <h3>Servers</h3>
+          <label class="field"><span>Start on the last server that worked for a show</span><input type="checkbox" id="setPreferServer" class="switch"></label>
+          <p class="hint">Server names are matched across a series, so name your mirrors consistently (e.g. "Main", "Backup") and AniVLC remembers which one you used.</p>
+        </section>
+        <section class="card">
+          <h3>Accent</h3>
+          <div class="swatches lg" id="accentSwatches">
+            <button data-accent="#ff5fa2" style="--c:#ff5fa2" title="Sakura"></button>
+            <button data-accent="#8b7bff" style="--c:#8b7bff" title="Violet"></button>
+            <button data-accent="#34d3c0" style="--c:#34d3c0" title="Mint"></button>
+            <button data-accent="#ffb547" style="--c:#ffb547" title="Amber"></button>
+            <button data-accent="#4aa8ff" style="--c:#4aa8ff" title="Sky"></button>
+          </div>
+        </section>
+        <section class="card">
+          <h3>Offline library</h3>
+          <p class="hint" id="storageInfo">Checking storage…</p>
+          <p class="hint">Uploaded episodes play only while this tab is open. To keep one, choose <b>Save offline</b> from its menu in the queue. Stream entries are saved automatically.</p>
+          <div class="row-gap">
+            <button class="btn ghost sm" id="exportLibrary" title="Download all stream entries as a JSON backup"><svg><use href="#i-down"/></svg><span>Export</span></button>
+            <button class="btn ghost sm" id="importLibrary" title="Import a JSON backup or an .m3u playlist"><svg><use href="#i-upload"/></svg><span>Import</span></button>
+            <button class="btn ghost sm danger" id="clearLibrary">Clear library</button>
+          </div>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <dialog class="modal" id="streamDialog">
+    <form method="dialog" id="streamForm">
+      <header class="modal-head">
+        <h2 id="streamDialogTitle">Add stream</h2>
+        <button type="button" class="cbtn" data-close aria-label="Close"><svg><use href="#i-x"/></svg></button>
+      </header>
+      <div class="seg mode-seg" id="streamMode" role="radiogroup">
+        <button type="button" data-mode="single" class="sel">Single episode</button>
+        <button type="button" data-mode="series">Whole series</button>
+      </div>
+      <label class="field col"><span id="titleLabel">Title</span><input class="input" name="title" placeholder="Frieren · Episode 12" required></label>
+      <div class="series-only range-row">
+        <label class="field col"><span>First episode</span><input class="input" name="epFrom" type="number" min="0" max="9999" value="1"></label>
+        <label class="field col"><span>Last episode</span><input class="input" name="epTo" type="number" min="0" max="9999" value="12"></label>
+      </div>
+      <div class="field col"><span>Servers <small class="muted" id="serversHint">MP4, WebM, HLS (.m3u8) or DASH (.mpd). The first working server plays.</small></span>
+        <div id="serverRows" class="server-rows"></div>
+        <button type="button" class="linkish" id="addServerRow">+ Add another server</button>
+      </div>
+      <p class="hint series-only">In URLs, <code>{ep}</code> becomes the episode number. Use <code>{ep2}</code> or <code>{ep3}</code> for zero-padded numbers (05, 005), for example <code>https://media.example.com/show/{ep2}.m3u8</code>.</p>
+      <label class="field col"><span>Subtitle URL <small class="muted">optional, the host must allow cross-origin requests</small></span><input class="input" name="subUrl" placeholder="https://…/episode12.en.ass"></label>
+      <footer class="modal-foot">
+        <button type="button" class="btn ghost" data-close>Cancel</button>
+        <button type="submit" class="btn primary" value="save" id="streamSubmit">Save &amp; play</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="helpDialog">
+    <header class="modal-head">
+      <h2>Keyboard shortcuts</h2>
+      <button type="button" class="cbtn" data-close aria-label="Close"><svg><use href="#i-x"/></svg></button>
+    </header>
+    <div class="keys">
+      <div><kbd>Space</kbd><kbd>K</kbd><span>Play / pause</span></div>
+      <div><kbd>J</kbd><kbd>L</kbd><span>Back / forward (seek step)</span></div>
+      <div><kbd>←</kbd><kbd>→</kbd><span>Back / forward 5s</span></div>
+      <div><kbd>↑</kbd><kbd>↓</kbd><span>Volume</span></div>
+      <div><kbd>,</kbd><kbd>.</kbd><span>Frame step (paused)</span></div>
+      <div><kbd>0</kbd>–<kbd>9</kbd><span>Jump to 0–90%</span></div>
+      <div><kbd>O</kbd><span>Skip intro</span></div>
+      <div><kbd>N</kbd><kbd>B</kbd><span>Next / previous episode</span></div>
+      <div><kbd>S</kbd><span>Switch to next server</span></div>
+      <div><kbd>C</kbd><span>Subtitles on / off</span></div>
+      <div><kbd>V</kbd><span>Cycle subtitle tracks</span></div>
+      <div><kbd>G</kbd><kbd>H</kbd><span>Subtitles 0.1s earlier / later</span></div>
+      <div><kbd>⇧G</kbd><kbd>⇧H</kbd><span>Subtitles 1s earlier / later</span></div>
+      <div><kbd>[</kbd><kbd>]</kbd><span>Slower / faster</span></div>
+      <div><kbd>M</kbd><span>Mute</span></div>
+      <div><kbd>F</kbd><span>Fullscreen</span></div>
+      <div><kbd>T</kbd><span>Theater mode</span></div>
+      <div><kbd>I</kbd><span>Picture-in-picture</span></div>
+      <div><kbd>X</kbd><span>Screenshot</span></div>
+      <div><kbd>?</kbd><span>This sheet</span></div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="animeDialog">
+    <header class="modal-head">
+      <h2>Link anime</h2>
+      <button type="button" class="cbtn" data-close aria-label="Close"><svg><use href="#i-x"/></svg></button>
+    </header>
+    <p class="hint">Search AniList for this show to get cover art and accurate intro and outro skip times from AniSkip. Only the show title is sent, never your files.</p>
+    <form class="anime-search" id="animeSearchForm">
+      <input type="search" class="input" id="animeQuery" placeholder="Show title" autocomplete="off">
+      <button class="btn primary" type="submit"><svg><use href="#i-search"/></svg><span>Search</span></button>
+    </form>
+    <ol class="anime-results" id="animeResults"></ol>
+    <footer class="modal-foot">
+      <button type="button" class="btn ghost danger" id="unlinkAnime" hidden>Unlink</button>
+      <span class="hint" id="animeScope"></span>
+    </footer>
+  </dialog>
+
+  <input type="file" id="fileInput" multiple hidden accept="video/*,.mkv,.mp4,.webm,.m4v,.mov,.ts,.srt,.vtt,.ass,.ssa,.m3u,.m3u8,.json">
+  <input type="file" id="importInput" hidden accept=".json,.m3u,.m3u8,application/json,audio/x-mpegurl">
+  <input type="file" id="subInput" hidden accept=".srt,.vtt,.ass,.ssa,text/vtt">
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
